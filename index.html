@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>排行榜展示（3D 立体版，缩小版）</title>
+<title>排行榜展示（3D 立体版）</title>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
 <style>
@@ -21,8 +21,8 @@ body {
 
 /* 3D carousel 容器 */
 .scene {
-  width: 720px;  /* 原 900px * 0.75 */
-  height: 640px; /* 原 800px * 0.75 */
+  width: 800px;   /* 缩小 */
+  height: 800px;  /* 缩小 */
   perspective: 2000px;
   position: relative;
 }
@@ -35,15 +35,15 @@ body {
   transition: transform 1s ease-in-out;
 }
 
-/* 卡片样式缩小版 */
+/* 卡片样式 */
 .card {
-  width: 720px;  /* 原 900px * 0.8 */
-  height: 640px; /* 原 800px * 0.8 */
+  width: 800px;   /* 缩小 */
+  height: 800px;
   position: absolute;
   top: 0;
   left: 0;
-  border-radius: 16px; /* 原 20px * 0.75 */
-  box-shadow: 0 11px 30px rgba(0, 0, 0, 0.15); /* 缩小 shadow */
+  border-radius: 20px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -53,10 +53,10 @@ body {
   width: 90%;
   height: 95%;
   background: rgba(255, 255, 255, 0.9);
-  border-radius: 15px; /* 原 20px * 0.75 */
-  padding: 0.75rem; /* 原 1rem * 0.75 */
+  border-radius: 20px;
+  padding: 0.8rem; /* 缩小 */
   text-align: center;
-  box-shadow: inset 0 1.5px 4.5px rgba(0,0,0,0.1); /* 原 2px 6px */
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -64,9 +64,9 @@ body {
 }
 
 h2 {
-  font-size: 1.5rem; /* 原 2rem * 0.75 */
+  font-size: 1.8rem;  /* 缩小 */
   font-weight: 600;
-  margin-bottom: 0.75rem; /* 原 1rem * 0.75 */
+  margin-bottom: 1rem;
 }
 
 table {
@@ -80,9 +80,9 @@ tr {
 }
 
 th, td {
-  padding: 0.225rem; /* 原 0.3rem * 0.75 */
+  padding: 0.2rem; /* 缩小 */
   border-bottom: 1px solid #e5e7eb;
-  font-size: 0.9rem; /* 原 1.2rem * 0.75 */
+  font-size: 1rem;  /* 缩小 */
   width: 33.33%;
 }
 
@@ -98,11 +98,11 @@ tr:nth-child(even) {
   position: fixed;
   top: 20px;
   left: 20px;
-  width: 217px; /* 原 290 * 0.75 */
-  height: 217px; /* 原 290 * 0.75 */
+  width: 250px;  /* 缩小 */
+  height: 250px; /* 缩小 */
   background: rgba(255, 255, 255, 0.8);
-  border-radius: 15px; /* 原 20px * 0.75 */
-  box-shadow: 0 3.75px 11.25px rgba(0,0,0,0.2); /* 原 5px 15px */
+  border-radius: 20px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
   color: #333;
@@ -112,16 +112,16 @@ tr:nth-child(even) {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 1.5rem; /* 原 2rem * 0.75 */
+  font-size: 1.8rem; /* 缩小 */
 }
-.datetime-box span { display: block; margin: 0.225rem 0; } /* 原 0.3rem * 0.75 */
+.datetime-box span { display: block; margin: 0.3rem 0; }
 
 /* LOGO */
 img.logo {
   position: fixed;
-  top: 300px; /* 原 400 * 0.75 */
-  left: 15px; /* 原 20 * 0.75 */
-  width: 202px; /* 原 270 * 0.75 */
+  top: 400px;
+  left: 20px;
+  width: 230px;  /* 缩小 */
   height: auto;
   z-index: 20;
 }
@@ -143,24 +143,24 @@ img.logo {
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 3rem; /* 原 4rem * 0.75 */
+  font-size: 3.5rem; /* 缩小 */
   font-weight: bold;
   color: white;
-  text-shadow: 0 0 7.5px rgba(255,255,255,0.6),
-               0 0 15px rgba(255,255,255,0.4),
-               1.5px 3px 4.5px rgba(0,0,0,0.5);
+  text-shadow: 0 0 10px rgba(255,255,255,0.6),
+               0 0 20px rgba(255,255,255,0.4),
+               2px 4px 6px rgba(0,0,0,0.5);
   opacity: 0.6;
   pointer-events: none;
   user-select: none;
   animation: pulseGlow 2s infinite alternate;
   z-index: 15;
 }
-.arrow.left { left: 2.25%; } /* 原 3% * 0.75 */
-.arrow.right { right: 2.25%; }
+.arrow.left { left: 3%; }
+.arrow.right { right: 3%; }
 
 @keyframes pulseGlow {
-  from { text-shadow: 0 0 6px rgba(255,255,255,0.5); opacity: 0.5; }
-  to   { text-shadow: 0 0 18.75px rgba(255,255,255,1); opacity: 0.9; }
+  from { text-shadow: 0 0 8px rgba(255,255,255,0.5); opacity: 0.5; }
+  to   { text-shadow: 0 0 25px rgba(255,255,255,1); opacity: 0.9; }
 }
 </style>
 </head>
@@ -192,7 +192,7 @@ const cardData = [
   { title: "Total Point Ranking", color: "#C1E1FF", key: "Total Point Ranking" },
   { title: "Monthly Point Ranking", color: "#FFD8B1", key: "Monthly Point Ranking" },
   { title: "Bounty Task Ranking", color: "#C1FFD7", key: "Bounty Task Ranking" },
-  { title: "Pending Ranking", color: "#F7D6FF", key: "Pending Ranking" }
+  { title: "Pending Ranking", color: "#C1E1FF", key: "Pending Ranking" }
 ];
 
 const colors = [
@@ -208,12 +208,13 @@ const carousel = document.getElementById('carousel');
 function createCardElements() {
   carousel.innerHTML = "";
   const n = cardData.length;
-  const radius = 337.5; // 原 450 * 0.75
+  const radius = 400; // 原 450，缩小比例
   cardData.forEach((card, i) => {
     const cardDiv = document.createElement("div");
     cardDiv.className = "card";
     cardDiv.style.background = card.color;
 
+    // 默认表格占位
     cardDiv.innerHTML = `
       <div class="card-content">
         <h2>${card.title}</h2>
