@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>排行榜展示（3D 环形旋转版 v2）</title>
+<title>排行榜展示（3D 立体版）</title>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
 <style>
@@ -35,6 +35,7 @@ body {
   transition: transform 1s ease-in-out;
 }
 
+/* 卡片样式保留 HTML1 风格 */
 .card {
   width: 900px;
   height: 800px;
@@ -42,7 +43,7 @@ body {
   top: 0;
   left: 0;
   border-radius: 20px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -68,24 +69,29 @@ h2 {
   margin-bottom: 1rem;
 }
 
-/* === 使用 HTML1 的格子尺寸 === */
 table {
   width: 100%;
   border-collapse: collapse;
   height: 100%;
 }
 
-tr { height: calc(100% / 16); }
+tr {
+  height: calc(100% / 16); /* HTML1 的格子高度 */
+}
 
 th, td {
-  padding: 0.3rem;
+  padding: 0.3rem; /* HTML1 的 padding */
   border-bottom: 1px solid #e5e7eb;
-  font-size: 1.2rem;
+  font-size: 1.2rem; /* HTML1 的字体大小 */
   width: 33.33%;
 }
 
-th { background-color: rgba(255,255,255,0.6); }
-tr:nth-child(even) { background-color: rgba(255,255,255,0.4); }
+th {
+  background-color: rgba(255,255,255,0.6);
+}
+tr:nth-child(even) {
+  background-color: rgba(255,255,255,0.4);
+}
 
 /* 时间显示 */
 .datetime-box {
@@ -140,7 +146,9 @@ img.logo {
   font-size: 4rem;
   font-weight: bold;
   color: white;
-  text-shadow: 0 0 10px rgba(255,255,255,0.6),0 0 20px rgba(255,255,255,0.4),2px 4px 6px rgba(0,0,0,0.5);
+  text-shadow: 0 0 10px rgba(255,255,255,0.6),
+               0 0 20px rgba(255,255,255,0.4),
+               2px 4px 6px rgba(0,0,0,0.5);
   opacity: 0.6;
   pointer-events: none;
   user-select: none;
@@ -149,9 +157,10 @@ img.logo {
 }
 .arrow.left { left: 3%; }
 .arrow.right { right: 3%; }
+
 @keyframes pulseGlow {
   from { text-shadow: 0 0 8px rgba(255,255,255,0.5); opacity: 0.5; }
-  to { text-shadow: 0 0 25px rgba(255,255,255,1); opacity: 0.9; }
+  to   { text-shadow: 0 0 25px rgba(255,255,255,1); opacity: 0.9; }
 }
 </style>
 </head>
@@ -179,7 +188,6 @@ img.logo {
 </div>
 
 <script>
-/* ===== 卡片定义 ===== */
 const cardData = [
   { title: "Total Point Ranking", color: "#C1E1FF", key: "Total Point Ranking" },
   { title: "Monthly Point Ranking", color: "#FFD8B1", key: "Monthly Point Ranking" },
@@ -196,17 +204,17 @@ const colors = [
 
 const carousel = document.getElementById('carousel');
 
-/* ===== 创建卡片元素（3D 环形） ===== */
+/* ===== 创建 3D 卡片 ===== */
 function createCardElements() {
   carousel.innerHTML = "";
   const n = cardData.length;
   const radius = 450; // 圆盘半径
-
   cardData.forEach((card, i) => {
     const cardDiv = document.createElement("div");
     cardDiv.className = "card";
     cardDiv.style.background = card.color;
 
+    // 默认表格占位
     cardDiv.innerHTML = `
       <div class="card-content">
         <h2>${card.title}</h2>
@@ -223,10 +231,8 @@ function createCardElements() {
   });
 }
 
-/* ===== 旋转控制 ===== */
 let angleY = 0;
 let currentIndex = 0;
-
 function updateCarousel() {
   carousel.style.transform = `rotateY(${angleY}deg)`;
   document.body.style.background = colors[currentIndex];
@@ -247,7 +253,6 @@ function prevSlide() {
 document.querySelector(".left-zone").addEventListener("click", prevSlide);
 document.querySelector(".right-zone").addEventListener("click", nextSlide);
 
-/* 触屏滑动 */
 let startX = 0;
 document.body.addEventListener("touchstart", e => startX = e.touches[0].clientX);
 document.body.addEventListener("touchend", e => {
@@ -266,24 +271,21 @@ function updateDateTime() {
 setInterval(updateDateTime, 1000);
 updateDateTime();
 
-/* ===== 从 GAS 加载数据 ===== */
+/* ===== 从 GAS 获取数据 ===== */
 async function loadDataFromGS() {
-  const url = "https://script.google.com/macros/s/AKfycbx3QuxzX27N2eEGVkF0bDatl2kiwFst2b547AmBvDiPBTPuWWS-eRGjplp6ZHYox4i4/exec";
-
+  const url = "https://script.google.com/macros/s/AKfycbx3QuxzX27N2eEGVkF0bDatl2kiwFst2b547AmBvDiPBTPuWWS-eRGjplp6ZHYox4i4/exec"; // 你的 GAS URL
   try {
     const res = await fetch(url);
     const data = await res.json();
 
-    createCardElements(); // 先生成卡片
+    createCardElements();
 
     cardData.forEach((card, i) => {
       const sheetObj = data[card.key];
       if(!sheetObj || !sheetObj.headers || !sheetObj.rows) return;
-
       const cardDiv = carousel.children[i];
       const headers = sheetObj.headers;
       const rows = sheetObj.rows;
-
       cardDiv.querySelector("table").innerHTML = `
         <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
         ${rows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
@@ -296,10 +298,11 @@ async function loadDataFromGS() {
   }
 }
 
-/* ===== 页面初始化 ===== */
+/* 页面初始加载 */
 loadDataFromGS();
 setInterval(loadDataFromGS, 5 * 60 * 1000);
 </script>
 
 </body>
 </html>
+
