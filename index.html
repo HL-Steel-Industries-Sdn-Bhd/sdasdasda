@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>排行榜展示（3D 环形旋转版 v2）</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  background: linear-gradient(135deg, #FFEFEF, #E8FFF8);
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 2s ease;
+}
+
+/* 3D carousel 容器 */
+.scene {
+  width: 900px;
+  height: 800px;
+  perspective: 2000px;
+  position: relative;
+}
+
+.carousel {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 1s ease-in-out;
+}
+
+.card {
+  width: 900px;
+  height: 800px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 20px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-content {
+  width: 90%;
+  height: 95%;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* === 使用 HTML1 的格子尺寸 === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  height: 100%;
+}
+
+tr { height: calc(100% / 16); }
+
+th, td {
+  padding: 0.3rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 1.2rem;
+  width: 33.33%;
+}
+
+th { background-color: rgba(255,255,255,0.6); }
+tr:nth-child(even) { background-color: rgba(255,255,255,0.4); }
+
+/* 时间显示 */
+.datetime-box {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 290px;
+  height: 290px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.0rem;
+}
+.datetime-box span { display: block; margin: 0.3rem 0; }
+
+/* LOGO */
+img.logo {
+  position: fixed;
+  top: 400px;
+  left: 20px;
+  width: 270px;
+  height: auto;
+  z-index: 20;
+}
+
+/* 点击区域 */
+.left-zone, .right-zone {
+  position: fixed;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  z-index: 10;
+  cursor: pointer;
+}
+.left-zone { left: 0; }
+.right-zone { right: 0; }
+
+/* 箭头 */
+.arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 4rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 0 10px rgba(255,255,255,0.6),0 0 20px rgba(255,255,255,0.4),2px 4px 6px rgba(0,0,0,0.5);
+  opacity: 0.6;
+  pointer-events: none;
+  user-select: none;
+  animation: pulseGlow 2s infinite alternate;
+  z-index: 15;
+}
+.arrow.left { left: 3%; }
+.arrow.right { right: 3%; }
+@keyframes pulseGlow {
+  from { text-shadow: 0 0 8px rgba(255,255,255,0.5); opacity: 0.5; }
+  to { text-shadow: 0 0 25px rgba(255,255,255,1); opacity: 0.9; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- 时间 -->
+<div class="datetime-box" id="datetimeBox">
+  <span id="date">--/--/----</span>
+  <span id="time">--:--:--</span>
+  <span id="weekday">---</span>
+</div>
+
+<!-- LOGO -->
+<img class="logo" src="" alt="Logo">
+
+<!-- 箭头 + 点击区 -->
+<div class="arrow left">❮</div>
+<div class="arrow right">❯</div>
+<div class="left-zone"></div>
+<div class="right-zone"></div>
+
+<div class="scene">
+  <div class="carousel" id="carousel"></div>
+</div>
+
+<script>
+/* ===== 卡片定义 ===== */
+const cardData = [
+  { title: "Total Point Ranking", color: "#C1E1FF", key: "Total Point Ranking" },
+  { title: "Monthly Point Ranking", color: "#FFD8B1", key: "Monthly Point Ranking" },
+  { title: "Bounty Task Ranking", color: "#C1FFD7", key: "Bounty Task Ranking" },
+  { title: "Pending Ranking", color: "#C1E1FF", key: "Pending Ranking" }
+];
+
+const colors = [
+  "linear-gradient(135deg, #FFF8E7, #E3F2FD)",
+  "linear-gradient(135deg, #E8FFF8, #FFF5E1)",
+  "linear-gradient(135deg, #FFF0F5, #E3FFF7)",
+  "linear-gradient(135deg, #F0FFF3, #E8E8FF)"
+];
+
+const carousel = document.getElementById('carousel');
+
+/* ===== 创建卡片元素（3D 环形） ===== */
+function createCardElements() {
+  carousel.innerHTML = "";
+  const n = cardData.length;
+  const radius = 450; // 圆盘半径
+
+  cardData.forEach((card, i) => {
+    const cardDiv = document.createElement("div");
+    cardDiv.className = "card";
+    cardDiv.style.background = card.color;
+
+    cardDiv.innerHTML = `
+      <div class="card-content">
+        <h2>${card.title}</h2>
+        <table>
+          <tr>${["Name","Point","Rank"].map(h=>`<th>${h}</th>`).join('')}</tr>
+          ${Array(16).fill(["--","--","--"]).map(row=>`<tr>${row.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}
+        </table>
+      </div>
+    `;
+
+    const angle = (360 / n) * i;
+    cardDiv.style.transform = `rotateY(${angle}deg) translateZ(${radius}px)`;
+    carousel.appendChild(cardDiv);
+  });
+}
+
+/* ===== 旋转控制 ===== */
+let angleY = 0;
+let currentIndex = 0;
+
+function updateCarousel() {
+  carousel.style.transform = `rotateY(${angleY}deg)`;
+  document.body.style.background = colors[currentIndex];
+}
+
+function nextSlide() {
+  angleY -= 90;
+  currentIndex = (currentIndex + 1) % cardData.length;
+  updateCarousel();
+}
+
+function prevSlide() {
+  angleY += 90;
+  currentIndex = (currentIndex - 1 + cardData.length) % cardData.length;
+  updateCarousel();
+}
+
+document.querySelector(".left-zone").addEventListener("click", prevSlide);
+document.querySelector(".right-zone").addEventListener("click", nextSlide);
+
+/* 触屏滑动 */
+let startX = 0;
+document.body.addEventListener("touchstart", e => startX = e.touches[0].clientX);
+document.body.addEventListener("touchend", e => {
+  const diff = e.changedTouches[0].clientX - startX;
+  if(diff > 50) prevSlide();
+  else if(diff < -50) nextSlide();
+});
+
+/* ===== 时间显示 ===== */
+function updateDateTime() {
+  const now = new Date();
+  document.getElementById("date").textContent = now.toLocaleDateString('en-GB');
+  document.getElementById("time").textContent = now.toLocaleTimeString('en-US');
+  document.getElementById("weekday").textContent = now.toLocaleDateString('en-GB', { weekday: 'long' });
+}
+setInterval(updateDateTime, 1000);
+updateDateTime();
+
+/* ===== 从 GAS 加载数据 ===== */
+async function loadDataFromGS() {
+  const url = "https://script.google.com/macros/s/AKfycbx3QuxzX27N2eEGVkF0bDatl2kiwFst2b547AmBvDiPBTPuWWS-eRGjplp6ZHYox4i4/exec";
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    createCardElements(); // 先生成卡片
+
+    cardData.forEach((card, i) => {
+      const sheetObj = data[card.key];
+      if(!sheetObj || !sheetObj.headers || !sheetObj.rows) return;
+
+      const cardDiv = carousel.children[i];
+      const headers = sheetObj.headers;
+      const rows = sheetObj.rows;
+
+      cardDiv.querySelector("table").innerHTML = `
+        <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
+        ${rows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
+      `;
+    });
+
+    updateCarousel();
+  } catch (e) {
+    console.error("加载 Google Sheet 时发生错误：", e);
+  }
+}
+
+/* ===== 页面初始化 ===== */
+loadDataFromGS();
+setInterval(loadDataFromGS, 5 * 60 * 1000);
+</script>
+
+</body>
+</html>
