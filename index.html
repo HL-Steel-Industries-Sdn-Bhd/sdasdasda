@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>排行榜展示（3D 立体版，800x800 马卡龙表头）</title>
+<title>排行榜展示（3D 立体版，缩小版）</title>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
 <style>
@@ -21,8 +21,8 @@ body {
 
 /* 3D carousel 容器 */
 .scene {
-  width: 800px;  
-  height: 800px; 
+  width: 675px;  /* 原 900px * 0.75 */
+  height: 600px; /* 原 800px * 0.75 */
   perspective: 2000px;
   position: relative;
 }
@@ -35,15 +35,15 @@ body {
   transition: transform 1s ease-in-out;
 }
 
-/* 卡片样式优化清晰版 */
+/* 卡片样式缩小版 */
 .card {
-  width: 800px;
-  height: 800px;
+  width: 720px;  /* 原 900px * 0.8 */
+  height: 640px; /* 原 800px * 0.8 */
   position: absolute;
   top: 0;
   left: 0;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border-radius: 15px; /* 原 20px * 0.75 */
+  box-shadow: 0 11px 30px rgba(0, 0, 0, 0.15); /* 缩小 shadow */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -52,10 +52,11 @@ body {
 .card-content {
   width: 90%;
   height: 95%;
-  background: #fff; 
-  border-radius: 16px;
-  padding: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 15px; /* 原 20px * 0.75 */
+  padding: 0.75rem; /* 原 1rem * 0.75 */
   text-align: center;
+  box-shadow: inset 0 1.5px 4.5px rgba(0,0,0,0.1); /* 原 2px 6px */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -63,9 +64,9 @@ body {
 }
 
 h2 {
-  font-size: 26px; 
+  font-size: 1.5rem; /* 原 2rem * 0.75 */
   font-weight: 600;
-  margin-bottom: 14px; 
+  margin-bottom: 0.75rem; /* 原 1rem * 0.75 */
 }
 
 table {
@@ -79,19 +80,17 @@ tr {
 }
 
 th, td {
-  padding: 4px; 
-  border-bottom: 1px solid #888; 
-  font-size: 15px; 
+  padding: 0.225rem; /* 原 0.3rem * 0.75 */
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.9rem; /* 原 1.2rem * 0.75 */
   width: 33.33%;
 }
 
 th {
-  background-color: transparent; /* 去掉灰色 */
-  font-weight: 600;
+  background-color: rgba(255,255,255,0.6);
 }
-
 tr:nth-child(even) {
-  background-color: #fafafa;
+  background-color: rgba(255,255,255,0.4);
 }
 
 /* 时间显示 */
@@ -99,11 +98,11 @@ tr:nth-child(even) {
   position: fixed;
   top: 20px;
   left: 20px;
-  width: 240px; 
-  height: 240px; 
-  background: #fff; 
-  border-radius: 16px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+  width: 217px; /* 原 290 * 0.75 */
+  height: 217px; /* 原 290 * 0.75 */
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 15px; /* 原 20px * 0.75 */
+  box-shadow: 0 3.75px 11.25px rgba(0,0,0,0.2); /* 原 5px 15px */
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
   color: #333;
@@ -113,16 +112,16 @@ tr:nth-child(even) {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 26px;
+  font-size: 1.5rem; /* 原 2rem * 0.75 */
 }
-.datetime-box span { display: block; margin: 4px 0; }
+.datetime-box span { display: block; margin: 0.225rem 0; } /* 原 0.3rem * 0.75 */
 
 /* LOGO */
 img.logo {
   position: fixed;
-  top: 320px;
-  left: 20px;
-  width: 220px;
+  top: 300px; /* 原 400 * 0.75 */
+  left: 15px; /* 原 20 * 0.75 */
+  width: 202px; /* 原 270 * 0.75 */
   height: auto;
   z-index: 20;
 }
@@ -144,24 +143,24 @@ img.logo {
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 38px; 
+  font-size: 3rem; /* 原 4rem * 0.75 */
   font-weight: bold;
   color: white;
-  text-shadow: 0 0 6px rgba(255,255,255,0.8),
-               0 0 12px rgba(255,255,255,0.6),
-               1px 2px 4px rgba(0,0,0,0.5);
-  opacity: 0.85;
+  text-shadow: 0 0 7.5px rgba(255,255,255,0.6),
+               0 0 15px rgba(255,255,255,0.4),
+               1.5px 3px 4.5px rgba(0,0,0,0.5);
+  opacity: 0.6;
   pointer-events: none;
   user-select: none;
   animation: pulseGlow 2s infinite alternate;
   z-index: 15;
 }
-.arrow.left { left: 2.5%; }
-.arrow.right { right: 2.5%; }
+.arrow.left { left: 2.25%; } /* 原 3% * 0.75 */
+.arrow.right { right: 2.25%; }
 
 @keyframes pulseGlow {
-  from { text-shadow: 0 0 6px rgba(255,255,255,0.7); opacity: 0.7; }
-  to   { text-shadow: 0 0 18px rgba(255,255,255,1); opacity: 1; }
+  from { text-shadow: 0 0 6px rgba(255,255,255,0.5); opacity: 0.5; }
+  to   { text-shadow: 0 0 18.75px rgba(255,255,255,1); opacity: 0.9; }
 }
 </style>
 </head>
@@ -193,14 +192,14 @@ const cardData = [
   { title: "Total Point Ranking", color: "#C1E1FF", key: "Total Point Ranking" },
   { title: "Monthly Point Ranking", color: "#FFD8B1", key: "Monthly Point Ranking" },
   { title: "Bounty Task Ranking", color: "#C1FFD7", key: "Bounty Task Ranking" },
-  { title: "Pending Ranking", color: "#F7D6FF", key: "Pending Ranking" } // 马卡龙淡紫色
+  { title: "Pending Ranking", color: "#F7D6FF", key: "Pending Ranking" }
 ];
 
 const colors = [
   "linear-gradient(135deg, #FFF8E7, #E3F2FD)",
   "linear-gradient(135deg, #E8FFF8, #FFF5E1)",
   "linear-gradient(135deg, #FFF0F5, #E3FFF7)",
-  "linear-gradient(135deg, #F7D6FF, #E8E8FF)" // 背景也稍微搭配马卡龙色
+  "linear-gradient(135deg, #F0FFF3, #E8E8FF)"
 ];
 
 const carousel = document.getElementById('carousel');
@@ -209,7 +208,7 @@ const carousel = document.getElementById('carousel');
 function createCardElements() {
   carousel.innerHTML = "";
   const n = cardData.length;
-  const radius = 400; 
+  const radius = 337.5; // 原 450 * 0.75
   cardData.forEach((card, i) => {
     const cardDiv = document.createElement("div");
     cardDiv.className = "card";
@@ -219,11 +218,7 @@ function createCardElements() {
       <div class="card-content">
         <h2>${card.title}</h2>
         <table>
-          <tr>${["Name","Point","Rank"].map((h,j) => {
-            // 第四个表格单独设置表头背景颜色
-            if(i === 3) return `<th style="background-color:#E6C7FF">${h}</th>`;
-            return `<th>${h}</th>`;
-          }).join('')}</tr>
+          <tr>${["Name","Point","Rank"].map(h=>`<th>${h}</th>`).join('')}</tr>
           ${Array(16).fill(["--","--","--"]).map(row=>`<tr>${row.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}
         </table>
       </div>
@@ -277,7 +272,7 @@ updateDateTime();
 
 /* ===== 从 GAS 获取数据 ===== */
 async function loadDataFromGS() {
-  const url = "https://script.google.com/macros/s/AKfycbx3QuxzX27N2eEGVkF0bDatl2kiwFst2b547AmBvDiPBTPuWWS-eRGjplp6ZHYox4i4/exec"; 
+  const url = "https://script.google.com/macros/s/AKfycbx3QuxzX27N2eEGVkF0bDatl2kiwFst2b547AmBvDiPBTPuWWS-eRGjplp6ZHYox4i4/exec"; // 你的 GAS URL
   try {
     const res = await fetch(url);
     const data = await res.json();
@@ -291,10 +286,7 @@ async function loadDataFromGS() {
       const headers = sheetObj.headers;
       const rows = sheetObj.rows;
       cardDiv.querySelector("table").innerHTML = `
-        <tr>${headers.map((h,j) => {
-          if(i === 3) return `<th style="background-color:#E6C7FF">${h}</th>`;
-          return `<th>${h}</th>`;
-        }).join('')}</tr>
+        <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
         ${rows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
       `;
     });
@@ -305,14 +297,10 @@ async function loadDataFromGS() {
   }
 }
 
+/* 页面初始加载 */
 loadDataFromGS();
 setInterval(loadDataFromGS, 5 * 60 * 1000);
 </script>
 
 </body>
 </html>
-
-
-
-
-
